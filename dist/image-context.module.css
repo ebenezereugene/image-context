@@ -1,0 +1,155 @@
+.contextContainer {
+  /* Dynamic container background color adaptation */
+  background-color: #cecece;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  display: block;
+}
+
+/* System Dark Mode Override for Container */
+@media (prefers-color-scheme: dark) {
+  .contextContainer {
+    background-color: #1a1a1a;
+  }
+}
+
+.contextImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Smoothly interpolates the blur radius over 0.3s without layout jumps */
+  transition: filter 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: filter;
+}
+
+/* Optional dynamic blur rule applied when blurOnOpen and isVisible are true */
+.imageBlurred {
+  filter: blur(.9px) brightness(.85) contrast(0.95);
+}
+
+.triggerButton {
+  width: var(--trigger-dimension, 32px);
+  height: var(--trigger-dimension, 32px);
+  
+  /* Light mode trigger styles */
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.triggerButton:hover {
+  transform: scale(1.05);
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* System Dark Mode Override for Trigger Button */
+@media (prefers-color-scheme: dark) {
+  .triggerButton {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+  .triggerButton:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.triggerGroup {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: inline-block;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.triggerSvg {
+  height: calc(var(--trigger-dimension, 32px) * 0.4);
+  width: auto;
+  transition: transform 0.2s ease;
+}
+
+/* Base Built-in Context Panel Styling (Default: Light Mode) */
+.contextPanel {
+  background-color: rgba(255, 255, 255, 0.85); /* #ffffffce equivalent */
+  color: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.4); /* #ffffff66 equivalent */
+  border-radius: 7px;
+  line-height: 1.6;
+  backdrop-filter: blur(8px); /* Increased blur slightly for enhanced dark mode legibility */
+  -webkit-backdrop-filter: blur(8px);
+  padding: clamp(10px, 2vw, 15px);
+  font-size: clamp(11px, 2.5vw, 13px);
+  width: max-content;
+  max-width: min(250px, calc(100vw - 40px));
+  word-break: break-word;
+  white-space: normal;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* System Dark Mode Override for the Context Popover Panel */
+@media (prefers-color-scheme: dark) {
+  .contextPanel {
+    background-color: rgba(20, 20, 20, 0.75);
+    color: #eeeeee;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.truncatedText {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+
+/* --- FLUID MOVEMENT ANIMATION GENERATION ENGINE --- */
+.animationWrapper {
+  position: absolute;
+  bottom: calc(var(--trigger-dimension, 32px) + 12px);
+  left: 0;
+  z-index: 11;
+  transform-origin: bottom left;
+  animation: fluidSpringReveal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes fluidSpringReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Adaptive Accessibility Safe-Mode Configurations */
+@media (prefers-reduced-motion: reduce) {
+  .animationWrapper {
+    animation: basicFadeIn 0.2s ease-out forwards;
+  }
+  .contextImage {
+    transition: none;
+  }
+}
+
+@keyframes basicFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

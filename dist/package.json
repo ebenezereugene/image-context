@@ -1,0 +1,43 @@
+{
+  "name": "image-context",
+  "version": "1.0.0",
+  "description": "An interactive React/Next.js micro-narrative component with structural hotspots, appearance modes, and contextual image blurring.",
+  "keywords": [
+    "react",
+    "nextjs",
+    "image-hotspots",
+    "ui-component",
+    "interactive-images",
+    "tailwind-css"
+  ],
+  "homepage": "https://github.com/ebenezereugene/image-context#readme",
+  "bugs": {
+    "url": "https://github.com/ebenezereugene/image-context/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ebenezereugene/image-context.git"
+  },
+  "license": "MIT",
+  "author": "Eugene Ebenezer",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0 || ^19.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "module": "dist/index.js"
+}

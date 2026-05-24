@@ -1,0 +1,9 @@
+import React from "react";
+import { ImageContextProps } from "./types.js";
+type ExtendedImageContextProps = ImageContextProps & {
+    children?: React.ReactNode;
+    showTrigger?: boolean;
+    blurOnOpen?: boolean;
+};
+declare const ImageContext: React.FC<ExtendedImageContextProps>;
+export default ImageContext;

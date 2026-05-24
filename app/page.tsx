@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Hotspot from "./components/hotspot";
-import ImageContext from "./components/image-context";
+
 import Link from "next/link";
+import { Hotspot, ImageContext } from "@/dist";
 
 function StaggeredContext({ isVisible }: { isVisible: boolean }) {
   const [step, setStep] = useState(0);
