@@ -1,5 +1,6 @@
 {
   "name": "image-context",
+  "description": "A component for next js to display images with a context property",
   "version": "0.1.0",
   "private": true,
   "scripts": {
