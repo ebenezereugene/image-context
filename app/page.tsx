@@ -67,7 +67,7 @@ function StaggeredContext({ isVisible }: { isVisible: boolean }) {
 
 export default function Home() {
   return (
-    <div className="w-screen h-screen flex flex-col lg:flex-row p-4 md:p-6 lg:p-12 gap-6 lg:gap-24 justify-start overflow-y-auto lg:overflow-hidden bg-gray-50 relative">
+    <div className="w-screen h-screen flex flex-col lg:flex-row p-4 md:p-6  lg:p-12 gap-6 lg:gap-24 justify-start overflow-y-auto lg:overflow-hidden bg-gray-50 relative">
       {/* 1. Universal Hidden Scrollbar CSS Engine Injector */}
       <style
         dangerouslySetInnerHTML={{
@@ -91,7 +91,7 @@ export default function Home() {
 
       {/* 3. Left Pane: Sticky Text Block (Preserved mt-115 for desktop, safe for mobile) */}
       <div className="flex flex-col justify-center w-full lg:max-w-[400px] mt-6 lg:mt-115 h-fit order-2 lg:order-1 mb-20 lg:mb-0 pb-12 lg:pb-0 px-2 lg:px-0">
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900">
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-grey-900">
           A Way to Add Context Layers to Your Images
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-gray-600">
@@ -146,7 +146,6 @@ export default function Home() {
         <div className="w-full aspect-[135.75/150.5] md:h-[600px] lg:h-[540px] md:w-auto self-center rounded-lg bg-amber-400 overflow-hidden flex-shrink-0 shadow-md">
           <ImageContext
             triggerSize={"md"}
-       
             context="You can also add multiple hotspots to the same image, each with its own context."
             src="https://images.pexels.com/photos/6210611/pexels-photo-6210611.jpeg"
           >
@@ -159,7 +158,7 @@ export default function Home() {
             <Hotspot
               context="This is another context hotspot"
               triggerSize={"sm"}
-              x={55}
+              x={50}
               y={80}
             />
           </ImageContext>

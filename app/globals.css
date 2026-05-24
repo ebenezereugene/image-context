@@ -11,4 +11,5 @@ body {
   color: #1a1a1a; /* Softens the harshness of pure #000000 */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
 }

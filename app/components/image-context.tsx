@@ -6,10 +6,11 @@ import styles from "./image-context.module.css";
 import { ContextPanelProps, ImageContextProps } from "./types";
 import { ContextPanel } from "./contextPanel";
 
-// 👈 Added showTrigger to the temporary type extension here
+// Added showTrigger and blurOnOpen to the temporary type extension
 type ExtendedImageContextProps = ImageContextProps & {
   children?: React.ReactNode;
   showTrigger?: boolean;
+  blurOnOpen?: boolean; // 👈 1. Added optional blur control token
 };
 
 const ImageContext: React.FC<ExtendedImageContextProps> = ({
@@ -19,7 +20,8 @@ const ImageContext: React.FC<ExtendedImageContextProps> = ({
   triggerIcon,
   triggerSize = "md",
   open = false,
-  showTrigger = true, // 👈 1. Added prop with a safe default value of true
+  showTrigger = true,
+  blurOnOpen = false, 
   children,
   onVisibleChange,
 }) => {
@@ -102,11 +104,16 @@ const ImageContext: React.FC<ExtendedImageContextProps> = ({
     return context;
   };
 
+  // 👈 3. Compute dynamic image classes based on active state and rules
+  const imageClassName = `${styles.contextImage} ${
+    blurOnOpen && isVisible ? styles.imageBlurred : ""
+  }`;
+
   return (
     <div className={styles.contextContainer}>
-      <img src={src} alt={alt} className={styles.contextImage} />
+      {/* 👈 4. Pass the modified className down to the image engine tag */}
+      <img src={src} alt={alt} className={imageClassName} />
 
-      {/* 👈 2. Wrap the trigger group block inside the conditional gate statement */}
       {showTrigger && (
         <div
           ref={triggerGroupRef}
@@ -151,7 +158,6 @@ const ImageContext: React.FC<ExtendedImageContextProps> = ({
         </div>
       )}
 
-      {/* 3. Hotspots render out down here freely regardless of whether the main banner trigger is hidden */}
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child, { triggerSize } as never);
