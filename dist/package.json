@@ -1,6 +1,6 @@
 {
   "name": "image-context",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "An interactive React/Next.js micro-narrative component with structural hotspots, appearance modes, and contextual image blurring.",
   "keywords": [
     "react",
@@ -27,17 +27,30 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && copyfiles \"*.module.css\" dist/",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "devDependencies": {
     "@types/react": "^18.2.0 || ^19.0.0",
+    "copyfiles": "^2.4.1",
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
-  "module": "dist/index.js"
+  "module": "dist/index.js",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./"
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
