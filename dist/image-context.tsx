@@ -3,14 +3,14 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./image-context.module.css";
-import { ContextPanelProps, ImageContextProps } from "./types.js";
+import { ImageContextProps } from "./types.js";
 import { ContextPanel } from "./contextPanel.js";
 
-// Added showTrigger and blurOnOpen to the temporary type extension
 type ExtendedImageContextProps = ImageContextProps & {
   children?: React.ReactNode;
   showTrigger?: boolean;
-  blurOnOpen?: boolean; // 👈 1. Added optional blur control token
+  blurOnOpen?: boolean;
+  imageStyle?: React.CSSProperties;
 };
 
 const ImageContext: React.FC<ExtendedImageContextProps> = ({
@@ -21,7 +21,8 @@ const ImageContext: React.FC<ExtendedImageContextProps> = ({
   triggerSize = "md",
   open = false,
   showTrigger = true,
-  blurOnOpen = false, 
+  blurOnOpen = false,
+  imageStyle,
   children,
   onVisibleChange,
 }) => {
@@ -98,21 +99,19 @@ const ImageContext: React.FC<ExtendedImageContextProps> = ({
     if (typeof context === "function") {
       return context({
         isVisible,
-        setIsVisible: (v: boolean) => updateVisibility(v, v),
+        setIsVisible: (v) => updateVisibility(v, v),
       });
     }
     return context;
   };
 
-  // 👈 3. Compute dynamic image classes based on active state and rules
   const imageClassName = `${styles.contextImage} ${
     blurOnOpen && isVisible ? styles.imageBlurred : ""
   }`;
 
   return (
     <div className={styles.contextContainer}>
-      {/* 👈 4. Pass the modified className down to the image engine tag */}
-      <img src={src} alt={alt} className={imageClassName} />
+      <img src={src} alt={alt} className={imageClassName} style={imageStyle} />
 
       {showTrigger && (
         <div
@@ -158,6 +157,7 @@ const ImageContext: React.FC<ExtendedImageContextProps> = ({
         </div>
       )}
 
+      {/* 👇 FIXED: Removed 'isVisible &&' so hotspots are always injected and interactable right away */}
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child, { triggerSize } as never);

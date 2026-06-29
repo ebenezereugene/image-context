@@ -1,169 +1,294 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Hotspot, ImageContext } from "@/dist";
+import React from "react";
+import ImageContext from "./components/image-context";
+import AIModelContextCard from "./playground/AIModelContextCard";
+import Hotspot from "./components/hotspot";
 
-function StaggeredContext({ isVisible }: { isVisible: boolean }) {
-  const [step, setStep] = useState(0);
+interface ContextState {
+  isVisible: boolean;
+  setIsVisible: (visible: boolean) => void;
+}
+
+const Page = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const totalContexts = 3;
+
+  const isScrollingRef = useRef(false);
 
   useEffect(() => {
-    let timer0: ReturnType<typeof setTimeout> | undefined;
-    let timer1: ReturnType<typeof setTimeout> | undefined;
-    let timer2: ReturnType<typeof setTimeout> | undefined;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"].includes(e.key)) {
+        e.preventDefault();
 
-    if (isVisible) {
-      timer0 = setTimeout(() => setStep(1), 0);
-      timer1 = setTimeout(() => setStep(2), 450);
-      timer2 = setTimeout(() => setStep(3), 900);
-    } else {
-      timer0 = setTimeout(() => setStep(0), 0);
-    }
+        setActiveIndex((prevIndex) => {
+          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+            return (prevIndex + 1) % totalContexts;
+          } else {
+            return (prevIndex - 1 + totalContexts) % totalContexts;
+          }
+        });
+      }
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < 15) return;
+
+      e.preventDefault();
+
+      if (isScrollingRef.current) return;
+      isScrollingRef.current = true;
+
+      setActiveIndex((prevIndex) => {
+        if (e.deltaY > 0) {
+          return (prevIndex + 1) % totalContexts;
+        } else {
+          return (prevIndex - 1 + totalContexts) % totalContexts;
+        }
+      });
+
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 1400);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      if (timer0) clearTimeout(timer0);
-      if (timer1) clearTimeout(timer1);
-      if (timer2) clearTimeout(timer2);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("wheel", handleWheel);
     };
-  }, [isVisible]);
+  }, []);
 
   return (
-    <div className="flex flex-col gap-2 bg-transparent text-white w-full max-w-60 p-3 text-sm">
-      <p
-        className={`text-sm transform transition-all duration-300 ease-out ${
-          step >= 1
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-        }`}
-      >
-        This is a custom component context example.
-      </p>
-
-      <Link
-        href="#"
-        className={`text-sm font-bold p-2 bg-[#0000004e] rounded-2xl transform transition-all duration-300 ease-out ${
-          step >= 2
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-        }`}
-      >
-        @instagram_username1
-      </Link>
-
-      <Link
-        href="#"
-        className={`text-sm font-bold p-2 bg-[#0000004e] rounded-2xl transform transition-all duration-300 ease-out ${
-          step >= 3
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-3 scale-95 pointer-events-none"
-        }`}
-      >
-        @instagram_username2
-      </Link>
-    </div>
-  );
-}
-
-export default function Home() {
-  return (
-    <div className="w-screen h-screen flex flex-col lg:flex-row p-4 md:p-6  lg:p-12 gap-6 lg:gap-24 justify-start overflow-y-auto lg:overflow-hidden bg-gray-50 relative">
-      {/* 1. Universal Hidden Scrollbar CSS Engine Injector */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-          .mask-scroll::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
-        `,
-        }}
-      />
-
-      {/* 2. Attribution Link - Fixed at the very bottom on mobile, absolute top corner on desktop */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-50/90 backdrop-blur-sm py-3 text-center border-t border-gray-100 lg:border-none lg:bg-transparent lg:py-0 lg:backdrop-blur-none lg:absolute lg:top-6 lg:right-6 lg:bottom-auto lg:left-auto lg:text-right z-30">
-        <Link
-          href="https://x.com/eugeneebenezer"
-          className="text-xs md:text-sm underline text-black hover:text-gray-700 transition-colors font-medium"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          By Eugene Ebenezer
-        </Link>
-      </div>
-
-      {/* 3. Left Pane: Sticky Text Block (Preserved mt-115 for desktop, safe for mobile) */}
-      <div className="flex flex-col justify-center w-full lg:max-w-[400px] mt-6 lg:mt-115 h-fit order-2 lg:order-1 mb-20 lg:mb-0 pb-12 lg:pb-0 px-2 lg:px-0">
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-grey-900">
-          A Way to Add Context Layers to Your Images
-        </h1>
-        <p className="mt-4 text-sm leading-relaxed text-gray-600">
-          Image Context allows you to add more context to your images, telling
-          richer stories and sharing more information in a non-intrusive way.
-        </p>
-        <div className="flex flex-row gap-3 mt-6">
-          <Link
-            href="/link to github"
-            className="px-6 py-2.5 text-center text-sm font-medium bg-black text-white rounded-lg hover:bg-gray-800 transition-colors shadow-sm"
-          >
-            Github
-          </Link>
+    <div
+      className="relative h-screen w-full bg-white overflow-hidden font-sans select-none flex flex-col justify-between p-6 md:p-8"
+      style={{
+        backgroundImage: "radial-gradient(#e5e5e5 1.5px, transparent 1.5px)",
+        backgroundSize: "24px 24px",
+      }}
+    >
+      {/* HEADER SECTION: Left Title Info & Right Github Icon */}
+      <header className="w-full flex items-start justify-between z-30 pointer-events-none">
+        {/* Left Informational Sidebar Block */}
+        <div className="max-w-[300px] flex flex-col gap-2.5 text-left pointer-events-auto">
+          <h1 className="text-xs font-black tracking-wider text-black uppercase">
+            Image Context Component
+          </h1>
+          <div className="text-[12px] leading-relaxed text-neutral-600 font-medium">
+            <p>
+              Image Context allows you to add more context to your images,
+              telling richer stories and sharing more information in a
+              non-intrusive way.
+            </p>
+          </div>
           <Link
             href="#"
-            className="px-6 py-2.5 text-center text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+            className="group flex items-center gap-2 text-[11px] font-bold text-black border-b border-black w-max pb-0.5 mt-1 hover:opacity-70 transition-opacity duration-200"
           >
-            Documentation
+            My Writeup About Its Future Application
+            <svg
+              className="w-3 h-3 transform transition-transform duration-300 group-hover:translate-x-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
           </Link>
         </div>
-      </div>
 
-      {/* 4. Right Pane: Fixed container height (lg:h-[580px]) safely breaks Card 2 into view */}
-      <div
-        className="w-full max-w-[680px] lg:max-w-[580px] h-auto lg:h-[580px] mt-4 lg:mt-12  flex flex-col gap-6 overflow-y-auto order-1 lg:order-2 rounded-xl mask-scroll select-none"
-        style={{
-          msOverflowStyle: "none" /* IE and Edge */,
-          scrollbarWidth: "none" /* Firefox */,
-        }}
-      >
-        {/* Card 1 */}
-        <div className="w-full aspect-[135.75/150.5] md:h-[600px] lg:h-[540px] md:w-auto self-center rounded-lg bg-amber-300 overflow-hidden flex-shrink-0 shadow-md">
-          <ImageContext
-            triggerSize={"md"}
-            context="This is the basic usage of Image Context, where the context is just a simple string."
-            src="https://images.pexels.com/photos/18934604/pexels-photo-18934604/free-photo-of-ancient-monument-in-karnak-temple-complex-in-luxor-egypt.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-          />
-        </div>
-
-        {/* Card 2 */}
-        <div className="w-full aspect-[135.75/150.5] md:h-[600px] lg:h-[540px] md:w-auto self-center rounded-lg bg-amber-300 overflow-hidden flex-shrink-0 shadow-md">
-          <ImageContext
-            triggerSize={"md"}
-            context={({ isVisible }: { isVisible: boolean }) => (
-              <StaggeredContext isVisible={isVisible} />
-            )}
-            src="https://images.pexels.com/photos/7108682/pexels-photo-7108682.jpeg"
-          />
-        </div>
-
-        {/* Card 3 */}
-        <div className="w-full aspect-[135.75/150.5] md:h-[600px] lg:h-[540px] md:w-auto self-center rounded-lg bg-amber-400 overflow-hidden flex-shrink-0 shadow-md">
-          <ImageContext
-            triggerSize={"md"}
-            context="You can also add multiple hotspots to the same image, each with its own context."
-            src="https://images.pexels.com/photos/6210611/pexels-photo-6210611.jpeg"
+        {/* Right Github Action Badge */}
+        <div className="pointer-events-auto">
+          <Link
+            href="#"
+            className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-black/10 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)] text-xs font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-[0.98] transition-all duration-200"
           >
-            <Hotspot
-              context="This is one context hotspot. It can be triggered by hovering or clicking on the trigger icon."
-              triggerSize={"sm"}
-              x={25}
-              y={60}
-            />
-            <Hotspot
-              context="This is another context hotspot"
-              triggerSize={"sm"}
-              x={50}
-              y={80}
-            />
-          </ImageContext>
+            <svg className="w-4 h-4 fill-current" viewBox="0 0 16 16">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            Github
+          </Link>
         </div>
-      </div>
+      </header>
+
+      {/* CORE PRESENTATION CANVAS STAGE */}
+      <main className="w-full flex flex-col items-center justify-center my-auto py-4 z-10">
+        {/* Frame Wrapper */}
+        <div className="relative h-[480px] w-[480px] bg-transparent overflow-visible perspective-[2000px]">
+          {/* CONTEXT INDEX 0 (Formerly Index 1) */}
+          <div
+            className="absolute inset-0 w-full h-full [will-change:transform,opacity,filter]"
+            style={{
+              transformOrigin: "center center",
+              backfaceVisibility: "hidden",
+              transitionProperty: "transform, opacity, filter",
+              transitionDuration:
+                activeIndex === 0
+                  ? "1300ms, 800ms, 1300ms"
+                  : "900ms, 600ms, 900ms",
+              transitionTimingFunction:
+                activeIndex === 0
+                  ? "cubic-bezier(0.16, 1, 0.3, 1), ease-out, cubic-bezier(0.16, 1, 0.3, 1)"
+                  : "cubic-bezier(0.3, 0, 0.2, 1), ease-in, cubic-bezier(0.3, 0, 0.2, 1)",
+              opacity: activeIndex === 0 ? 1 : 0,
+              filter: activeIndex === 0 ? "none" : "blur(12px)",
+              transform:
+                activeIndex === 0
+                  ? "scale(1) translateY(0px) rotate(0deg)"
+                  : activeIndex > 0
+                    ? "scale(0.88) translateY(24px) rotate(-1deg)"
+                    : "scale(1.12) translateY(-24px) rotate(1deg)",
+              pointerEvents: activeIndex === 0 ? "auto" : "none",
+              zIndex: activeIndex === 0 ? 10 : 0,
+            }}
+          >
+            <ImageContext
+              triggerSize={"md"}
+              imageStyle={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "16px",
+                boxShadow:
+                  "0 20px 40px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.02)",
+              }}
+              context="A high-angle interior view of a modern building's glass facade, featuring vibrant translucent rainbow-colored glass panels in bright neon pink, lime green, yellow, electric blue, and purple."
+              src="img1.png"
+            />
+          </div>
+
+          {/* CONTEXT INDEX 1 (Formerly Index 0) */}
+          <div
+            className="absolute inset-0 w-full h-full [will-change:transform,opacity,filter]"
+            style={{
+              transformOrigin: "center center",
+              backfaceVisibility: "hidden",
+              transitionProperty: "transform, opacity, filter",
+              transitionDuration:
+                activeIndex === 1
+                  ? "1300ms, 800ms, 1300ms"
+                  : "900ms, 600ms, 900ms",
+              transitionTimingFunction:
+                activeIndex === 1
+                  ? "cubic-bezier(0.16, 1, 0.3, 1), ease-out, cubic-bezier(0.16, 1, 0.3, 1)"
+                  : "cubic-bezier(0.3, 0, 0.2, 1), ease-in, cubic-bezier(0.3, 0, 0.2, 1)",
+              opacity: activeIndex === 1 ? 1 : 0,
+              filter: activeIndex === 1 ? "none" : "blur(12px)",
+              transform:
+                activeIndex === 1
+                  ? "scale(1) translateY(0px) rotate(0deg)"
+                  : activeIndex > 1
+                    ? "scale(0.88) translateY(24px) rotate(-1deg)"
+                    : "scale(1.12) translateY(-24px) rotate(1deg)",
+              pointerEvents: activeIndex === 1 ? "auto" : "none",
+              zIndex: activeIndex === 1 ? 10 : 0,
+            }}
+          >
+            <ImageContext
+              triggerSize={"md"}
+              blurOnOpen={true}
+              imageStyle={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "16px",
+                boxShadow:
+                  "0 20px 40px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.02)",
+              }}
+              context={({ isVisible }: ContextState) => (
+                <AIModelContextCard isVisible={isVisible} />
+              )}
+              src="https://images.pexels.com/photos/17791531/pexels-photo-17791531.jpeg"
+            />
+          </div>
+
+          {/* CONTEXT INDEX 2 */}
+          <div
+            className="absolute inset-0 w-full h-full [will-change:transform,opacity,filter]"
+            style={{
+              transformOrigin: "center center",
+              backfaceVisibility: "hidden",
+              transitionProperty: "transform, opacity, filter",
+              transitionDuration:
+                activeIndex === 2
+                  ? "1300ms, 800ms, 1300ms"
+                  : "900ms, 600ms, 900ms",
+              transitionTimingFunction:
+                activeIndex === 2
+                  ? "cubic-bezier(0.16, 1, 0.3, 1), ease-out, cubic-bezier(0.16, 1, 0.3, 1)"
+                  : "cubic-bezier(0.3, 0, 0.2, 1), ease-in, cubic-bezier(0.3, 0, 0.2, 1)",
+              opacity: activeIndex === 2 ? 1 : 0,
+              filter: activeIndex === 2 ? "none" : "blur(12px)",
+              transform:
+                activeIndex === 2
+                  ? "scale(1) translateY(0px) rotate(0deg)"
+                  : "scale(1.12) translateY(-24px) rotate(1deg)",
+              pointerEvents: activeIndex === 2 ? "auto" : "none",
+              zIndex: activeIndex === 2 ? 10 : 0,
+            }}
+          >
+            <ImageContext
+              triggerSize={"md"}
+              context="A high-angle interior view of a modern building's glass facade, featuring vibrant translucent rainbow-colored glass panels in bright neon pink, lime green, yellow, electric blue, and purple."
+              imageStyle={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "16px",
+                boxShadow:
+                  "0 20px 40px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.02)",
+              }}
+              src="https://images.pexels.com/photos/5384438/pexels-photo-5384438.jpeg"
+            >
+              <Hotspot
+                context="Amar, grinning at Bayo, while cracking a joke."
+                triggerSize={"sm"}
+                x={25}
+                y={60}
+              />
+              <Hotspot
+                context="Bayo, laughing heartily at a joke Amar made, while holding his laptop"
+                triggerSize={"sm"}
+                x={75}
+                y={40}
+              />
+            </ImageContext>
+          </div>
+        </div>
+      </main>
+
+      {/* FOOTER BADGE SECTION */}
+      <footer className="w-full flex justify-center z-30 pointer-events-none pb-2">
+        <div className="flex items-center gap-3 px-5 py-2 rounded-full border border-black/10 bg-white/80 backdrop-blur-md shadow-[0_2px_12px_rgba(0,0,0,0.04)] pointer-events-auto">
+          <div className="flex items-center gap-2 text-neutral-800 text-[11px] font-medium tracking-normal">
+            <span>Scroll or</span>
+            <div className="flex gap-1">
+              <span className="px-1.5 py-0.5 rounded border border-neutral-300 bg-neutral-50 text-[10px] font-mono font-bold text-neutral-600 shadow-[0_1px_0px_rgba(0,0,0,0.1)]">
+                ←
+              </span>
+              <span className="px-1.5 py-0.5 rounded border border-neutral-300 bg-neutral-50 text-[10px] font-mono font-bold text-neutral-600 shadow-[0_1px_0px_rgba(0,0,0,0.1)]">
+                →
+              </span>
+            </div>
+          </div>
+          <span className="h-3 w-px bg-neutral-300"></span>
+          <p className="text-[11px] font-medium text-neutral-600 tracking-normal">
+            Use wheel or arrow keys to slide between layers
+          </p>
+        </div>
+      </footer>
     </div>
   );
-}
+};
+
+export default Page;

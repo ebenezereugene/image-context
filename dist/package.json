@@ -1,6 +1,6 @@
 {
   "name": "image-context",
-  "version": "1.0.3",
+  "version": "2.1.0",
   "description": "An interactive React/Next.js micro-narrative component with structural hotspots, appearance modes, and contextual image blurring.",
   "keywords": [
     "react",
